@@ -22,13 +22,16 @@ def _roll_probability(numbers: Iterable[int], two_dice: bool) -> float:
         return len(card.activates_on) / 6
 
 def expected_value(card: Card, hand: List[Card], two_dice: bool, num_players: int) -> float:
+    """The average revenue a card will yield on a turn when it can be activated."""
     probability = _roll_probability(card.activates_on, two_dice)
     return probability * card.revenue(hand, num_players)
 
 def expected_revenue_my_turn(hand: List[Card], two_dice: bool, num_players: int):
+    """The average revenue a hand will yield on your turn."""
     active_cards = [c for c in hand if c.color in [Color.BLUE, Color.GREEN, Color.PURPLE]]
     return sum(expected_value(c, hand, two_dice, num_players) for c in active_cards)
 
 def expected_revenue_other_turn(hand: List[Card], two_dice: bool, num_players: int):
+    """The average revenue a hand will yield on another player's turn."""
     active_cards = [c for c in hand if c.color in [Color.RED, Color.BLUE]]
     return sum(expected_value(c, hand, two_dice, num_players) for c in active_cards)
