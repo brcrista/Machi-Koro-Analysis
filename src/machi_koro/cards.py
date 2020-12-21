@@ -55,7 +55,7 @@ class Bakery(Card):
         self.cost = 1
 
     def revenue(self, hand: List[Card], num_players: int) -> int:
-        return 1
+        return 1 + ShoppingMall.bonus(hand)
 
 class Cafe(Card):
     def __init__(self):
@@ -64,7 +64,7 @@ class Cafe(Card):
         self.cost = 2
 
     def revenue(self, hand: List[Card], num_players: int) -> int:
-        return 1
+        return 1 + ShoppingMall.bonus(hand)
 
 class ConvenienceStore(Card):
     def __init__(self):
@@ -73,7 +73,7 @@ class ConvenienceStore(Card):
         self.cost = 2
 
     def revenue(self, hand: List[Card], num_players: int) -> int:
-        return 3
+        return 3 + ShoppingMall.bonus(hand)
 
 class Forest(Card):
     def __init__(self):
@@ -146,7 +146,7 @@ class FamilyRestaurant(Card):
         self.cost = 3
 
     def revenue(self, hand: List[Card], num_players: int) -> int:
-        return 2
+        return 2 + ShoppingMall.bonus(hand)
 
 class AppleOrchard(Card):
     def __init__(self):
@@ -184,6 +184,12 @@ class ShoppingMall(Card):
 
     def revenue(self, hand: List[Card], num_players: int) -> int:
         return 0
+
+    def bonus(hand: List[Card]) -> int:
+        if any(isinstance(c, ShoppingMall) for c in hand):
+            return 1
+        else:
+            return 0
 
 class AmusementPark(Card):
     def __init__(self):
