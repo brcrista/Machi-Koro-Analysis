@@ -1,4 +1,4 @@
-name: environment-name
+name: machi-koro-analysis
 channels:
   - conda-forge
 dependencies:
