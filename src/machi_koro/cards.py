@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import List
+from typing import List, Set
 
 class Color(Enum):
     RED = 0
@@ -26,6 +26,7 @@ class Card:
     color: Color
     symbol: Symbol
     cost: int
+    activates_on: Set[int]
 
     def revenue(self, hand: List[Card], num_players: int) -> int:
         pass
@@ -35,6 +36,7 @@ class WheatField(Card):
         self.color = Color.BLUE
         self.symbol = Symbol.WHEAT
         self.cost = 1
+        self.activates_on = set([1])
 
     def revenue(self, hand: List[Card], num_players: int) -> int:
         return 1
@@ -43,7 +45,7 @@ class Ranch(Card):
     def __init__(self):
         self.color = Color.BLUE
         self.symbol = Symbol.COW
-        self.cost = 1
+        self.activates_on = set([2])
 
     def revenue(self, hand: List[Card], num_players: int) -> int:
         return 1
@@ -53,6 +55,7 @@ class Bakery(Card):
         self.color = Color.BLUE
         self.symbol = Symbol.BOX
         self.cost = 1
+        self.activates_on = set([2, 3])
 
     def revenue(self, hand: List[Card], num_players: int) -> int:
         return 1 + ShoppingMall.bonus(hand)
@@ -62,6 +65,7 @@ class Cafe(Card):
         self.color = Color.RED
         self.symbol = Symbol.CUP
         self.cost = 2
+        self.activates_on = set([2, 3])
 
     def revenue(self, hand: List[Card], num_players: int) -> int:
         return 1 + ShoppingMall.bonus(hand)
@@ -71,6 +75,7 @@ class ConvenienceStore(Card):
         self.color = Color.GREEN
         self.symbol = Symbol.BOX
         self.cost = 2
+        self.activates_on = set([4])
 
     def revenue(self, hand: List[Card], num_players: int) -> int:
         return 3 + ShoppingMall.bonus(hand)
@@ -80,6 +85,7 @@ class Forest(Card):
         self.color = Color.BLUE
         self.symbol = Symbol.GEAR
         self.cost = 3
+        self.activates_on = set([5])
 
     def revenue(self, hand: List[Card], num_players: int) -> int:
         return 1
@@ -89,6 +95,7 @@ class Stadium(Card):
         self.color = Color.PURPLE
         self.symbol = Symbol.TOWER
         self.cost = 6
+        self.activates_on = set([6])
 
     def revenue(self, hand: List[Card], num_players: int) -> int:
         return 2 * (num_players - 1)
@@ -98,6 +105,7 @@ class TvStation(Card):
         self.color = Color.PURPLE
         self.symbol = Symbol.TOWER
         self.cost = 7
+        self.activates_on = set([6])
 
     def revenue(self, hand: List[Card], num_players: int) -> int:
         return 5
@@ -107,6 +115,7 @@ class BusinessCenter(Card):
         self.color = Color.PURPLE
         self.symbol = Symbol.TOWER
         self.cost = 8
+        self.activates_on = set([6])
 
     def revenue(self, hand: List[Card], num_players: int) -> int:
         return 0
@@ -116,6 +125,7 @@ class CheeseFactory(Card):
         self.color = Color.GREEN
         self.symbol = Symbol.FACTORY
         self.cost = 5
+        self.activates_on = set([7])
 
     def revenue(self, hand: List[Card], num_players: int) -> int:
         cow_cards = [x for x in hand if x.symbol == Symbol.COW]
@@ -126,6 +136,7 @@ class FurnitureFactory(Card):
         self.color = Color.GREEN
         self.symbol = Symbol.FACTORY
         self.cost = 3
+        self.activates_on = set([8])
 
     def revenue(self, hand: List[Card], num_players: int) -> int:
         gear_cards = [x for x in hand if x.symbol == Symbol.GEAR]
@@ -135,6 +146,7 @@ class Mine(Card):
         self.color = Color.BLUE
         self.symbol = Symbol.GEAR
         self.cost = 6
+        self.activates_on = set([9])
 
     def revenue(self, hand: List[Card], num_players: int) -> int:
         return 5
@@ -144,6 +156,7 @@ class FamilyRestaurant(Card):
         self.color = Color.RED
         self.symbol = Symbol.CUP
         self.cost = 3
+        self.activates_on = set([9, 10])
 
     def revenue(self, hand: List[Card], num_players: int) -> int:
         return 2 + ShoppingMall.bonus(hand)
@@ -153,6 +166,7 @@ class AppleOrchard(Card):
         self.color = Color.BLUE
         self.symbol = Symbol.WHEAT
         self.cost = 3
+        self.activates_on = set([10])
 
     def revenue(self, hand: List[Card], num_players: int) -> int:
         return 3
@@ -162,6 +176,7 @@ class FruitVegetableMarket(Card):
         self.color = Color.GREEN
         self.symbol = Symbol.FRUIT
         self.cost = 2
+        self.activates_on = set([11, 12])
 
     def revenue(self, hand: List[Card], num_players: int) -> int:
         wheat_cards = [x for x in hand if x.symbol == Symbol.WHEAT]
@@ -172,6 +187,7 @@ class TrainStation(Card):
         self.color = Color.GOLD
         self.symbol = Symbol.TOWER
         self.cost = 4
+        self.activates_on = set()
 
     def revenue(self, hand: List[Card], num_players: int) -> int:
         return 0
@@ -181,6 +197,7 @@ class ShoppingMall(Card):
         self.color = Color.GOLD
         self.symbol = Symbol.TOWER
         self.cost = 10
+        self.activates_on = set()
 
     def revenue(self, hand: List[Card], num_players: int) -> int:
         return 0
@@ -196,6 +213,7 @@ class AmusementPark(Card):
         self.color = Color.GOLD
         self.symbol = Symbol.TOWER
         self.cost = 16
+        self.activates_on = set()
 
     def revenue(self, hand: List[Card], num_players: int) -> int:
         return 0
@@ -205,6 +223,7 @@ class RadioTower(Card):
         self.color = Color.GOLD
         self.symbol = Symbol.TOWER
         self.cost = 22
+        self.activates_on = set()
 
     def revenue(self, hand: List[Card], num_players: int) -> int:
         return 0
