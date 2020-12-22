@@ -45,6 +45,7 @@ class Ranch(Card):
     def __init__(self):
         self.color = Color.BLUE
         self.symbol = Symbol.COW
+        self.cost = 1
         self.activates_on = set([2])
 
     def revenue(self, hand: List[Card], num_players: int) -> int:
