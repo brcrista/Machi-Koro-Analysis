@@ -1,3 +1,5 @@
+import math
+
 from machi_koro.cards import Card, Color
 from typing import Iterable, List
 
@@ -15,20 +17,65 @@ def _ways_12(x):
     if x == 12: return 1
     return 0
 
+COLORS_ACTIVATED_ON_MY_TURN = [Color.BLUE, Color.GREEN, Color.PURPLE]
+COLORS_ACTIVATED_ON_OTHER_TURN = [Color.RED, Color.BLUE]
+
 def _roll_probability(numbers: Iterable[int], two_dice: bool) -> float:
     if two_dice:
-        return sum(_ways_12(x) for x in card.activates_on) / 36
+        return sum(_ways_12(x) for x in numbers) / 36
     else:
-        return len(card.activates_on) / 6
+        return sum([1 for n in numbers if 1 <= n <= 6]) / 6
 
 def expected_value(card: Card, hand: List[Card], two_dice: bool, num_players: int) -> float:
+    """The average revenue a card will yield on a turn when it can be activated."""
     probability = _roll_probability(card.activates_on, two_dice)
     return probability * card.revenue(hand, num_players)
 
+def expected_value_my_turn(card: Card, hand: List[Card], two_dice: bool, num_players: int) -> float:
+    """The average revenue a card will yield on your turn."""
+    if card.color in COLORS_ACTIVATED_ON_MY_TURN:
+        return expected_value(card, hand, two_dice, num_players)
+    else:
+        return 0
+
+def expected_value_other_turn(card: Card, hand: List[Card], two_dice: bool, num_players: int) -> float:
+    """The average revenue a card will yield on another player's turn."""
+    if card.color in COLORS_ACTIVATED_ON_OTHER_TURN:
+        return expected_value(card, hand, two_dice, num_players)
+    else:
+        return 0
+
+def gross_expected_value(card: Card, hand: List[Card], two_dice: bool, num_players: int) -> float:
+    """The average revenue a card will yield, taking into account whether it is active or not."""
+    my_turn = expected_value_my_turn(card, hand, two_dice, num_players)
+    other_turn = expected_value_other_turn(card, hand, two_dice, num_players)
+    return (my_turn + (num_players - 1) * other_turn) / num_players
+
 def expected_revenue_my_turn(hand: List[Card], two_dice: bool, num_players: int):
-    active_cards = [c for c in hand if c.color in [Color.BLUE, Color.GREEN, Color.PURPLE]]
-    return sum(expected_value(c, hand, two_dice, num_players) for c in active_cards)
+    """The average revenue a hand will yield on your turn."""
+    return sum(expected_value_my_turn(c, hand, two_dice, num_players) for c in hand)
 
 def expected_revenue_other_turn(hand: List[Card], two_dice: bool, num_players: int):
-    active_cards = [c for c in hand if c.color in [Color.RED, Color.BLUE]]
-    return sum(expected_value(c, hand, two_dice, num_players) for c in active_cards)
+    """The average revenue a hand will yield on another player's turn."""
+    return sum(expected_value_other_turn(c, hand, two_dice, num_players) for c in hand)
+
+def fastest_payoff(card: Card, hand: List[Card], num_players: int):
+    """The number of rolls needed to pay off a card if the card is activated by every roll."""
+    revenue = card.revenue(hand, num_players)
+    if revenue == 0:
+        return None
+    elif card.color in COLORS_ACTIVATED_ON_OTHER_TURN:
+        # This can pay off on the next roll after you buy it.
+        return math.ceil(card.cost / revenue)
+    else:
+        # You have to wait until your turn for it to pay off.
+        return num_players * math.ceil(card.cost / revenue)
+
+def expected_payoff(card: Card, hand: List[Card], two_dice: bool, num_players: int):
+    """The number of rolls to pay off a card on average."""
+    revenue = gross_expected_value(card, hand, two_dice, num_players)
+    if revenue == 0:
+        return None
+    else:
+        # The my turn / other turn logic is already built in to `gross_expected_value()`.
+        return math.ceil(card.cost / revenue)

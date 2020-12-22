@@ -45,6 +45,7 @@ class Ranch(Card):
     def __init__(self):
         self.color = Color.BLUE
         self.symbol = Symbol.COW
+        self.cost = 1
         self.activates_on = set([2])
 
     def revenue(self, hand: List[Card], num_players: int) -> int:
@@ -52,7 +53,7 @@ class Ranch(Card):
 
 class Bakery(Card):
     def __init__(self):
-        self.color = Color.BLUE
+        self.color = Color.GREEN
         self.symbol = Symbol.BOX
         self.cost = 1
         self.activates_on = set([2, 3])
@@ -141,6 +142,7 @@ class FurnitureFactory(Card):
     def revenue(self, hand: List[Card], num_players: int) -> int:
         gear_cards = [x for x in hand if x.symbol == Symbol.GEAR]
         return 3 * len(gear_cards)
+
 class Mine(Card):
     def __init__(self):
         self.color = Color.BLUE
