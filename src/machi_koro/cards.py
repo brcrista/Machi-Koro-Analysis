@@ -142,6 +142,7 @@ class FurnitureFactory(Card):
     def revenue(self, hand: List[Card], num_players: int) -> int:
         gear_cards = [x for x in hand if x.symbol == Symbol.GEAR]
         return 3 * len(gear_cards)
+
 class Mine(Card):
     def __init__(self):
         self.color = Color.BLUE
