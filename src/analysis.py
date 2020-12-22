@@ -63,7 +63,7 @@ def fastest_payoff(card: Card, hand: List[Card], num_players: int):
     """The number of rolls needed to pay off a card if the card is activated by every roll."""
     revenue = card.revenue(hand, num_players)
     if revenue == 0:
-        return math.inf
+        return None
     elif card.color in COLORS_ACTIVATED_ON_OTHER_TURN:
         # This can pay off on the next roll after you buy it.
         return math.ceil(card.cost / revenue)
@@ -75,7 +75,7 @@ def expected_payoff(card: Card, hand: List[Card], two_dice: bool, num_players: i
     """The number of rolls to pay off a card on average."""
     revenue = gross_expected_value(card, hand, two_dice, num_players)
     if revenue == 0:
-        return math.inf
+        return None
     else:
         # The my turn / other turn logic is already built in to `gross_expected_value()`.
         return math.ceil(card.cost / revenue)
