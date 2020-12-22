@@ -1,3 +1,4 @@
+from abc import ABCMeta, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
 from typing import List, Set
@@ -19,20 +20,20 @@ class Symbol(Enum):
     FACTORY = 6
     FRUIT = 7
 
-class Card: ...
-
-@dataclass
-class Card:
+class Card(metaclass=ABCMeta):
+    name: str
     color: Color
     symbol: Symbol
     cost: int
     activates_on: Set[int]
 
-    def revenue(self, hand: List[Card], num_players: int) -> int:
+    @abstractmethod
+    def revenue(self, hand: List['Card'], num_players: int) -> int:
         pass
 
 class WheatField(Card):
     def __init__(self):
+        self.name = "Wheat Field"
         self.color = Color.BLUE
         self.symbol = Symbol.WHEAT
         self.cost = 1
@@ -43,6 +44,7 @@ class WheatField(Card):
 
 class Ranch(Card):
     def __init__(self):
+        self.name = "Ranch"
         self.color = Color.BLUE
         self.symbol = Symbol.COW
         self.cost = 1
@@ -53,6 +55,7 @@ class Ranch(Card):
 
 class Bakery(Card):
     def __init__(self):
+        self.name = "Bakery"
         self.color = Color.GREEN
         self.symbol = Symbol.BOX
         self.cost = 1
@@ -63,6 +66,7 @@ class Bakery(Card):
 
 class Cafe(Card):
     def __init__(self):
+        self.name = "Cafe"
         self.color = Color.RED
         self.symbol = Symbol.CUP
         self.cost = 2
@@ -73,6 +77,7 @@ class Cafe(Card):
 
 class ConvenienceStore(Card):
     def __init__(self):
+        self.name = "Convenience Store"
         self.color = Color.GREEN
         self.symbol = Symbol.BOX
         self.cost = 2
@@ -83,6 +88,7 @@ class ConvenienceStore(Card):
 
 class Forest(Card):
     def __init__(self):
+        self.name = "Forest"
         self.color = Color.BLUE
         self.symbol = Symbol.GEAR
         self.cost = 3
@@ -93,6 +99,7 @@ class Forest(Card):
 
 class Stadium(Card):
     def __init__(self):
+        self.name = "Stadium"
         self.color = Color.PURPLE
         self.symbol = Symbol.TOWER
         self.cost = 6
@@ -103,6 +110,7 @@ class Stadium(Card):
 
 class TvStation(Card):
     def __init__(self):
+        self.name = "TV Station"
         self.color = Color.PURPLE
         self.symbol = Symbol.TOWER
         self.cost = 7
@@ -113,6 +121,7 @@ class TvStation(Card):
 
 class BusinessCenter(Card):
     def __init__(self):
+        self.name = "Business Center"
         self.color = Color.PURPLE
         self.symbol = Symbol.TOWER
         self.cost = 8
@@ -123,6 +132,7 @@ class BusinessCenter(Card):
 
 class CheeseFactory(Card):
     def __init__(self):
+        self.name = "Cheese Factory"
         self.color = Color.GREEN
         self.symbol = Symbol.FACTORY
         self.cost = 5
@@ -134,6 +144,7 @@ class CheeseFactory(Card):
 
 class FurnitureFactory(Card):
     def __init__(self):
+        self.name = "Furniture Factory"
         self.color = Color.GREEN
         self.symbol = Symbol.FACTORY
         self.cost = 3
@@ -145,6 +156,7 @@ class FurnitureFactory(Card):
 
 class Mine(Card):
     def __init__(self):
+        self.name = "Mine"
         self.color = Color.BLUE
         self.symbol = Symbol.GEAR
         self.cost = 6
@@ -155,6 +167,7 @@ class Mine(Card):
 
 class FamilyRestaurant(Card):
     def __init__(self):
+        self.name = "Family Restaurant"
         self.color = Color.RED
         self.symbol = Symbol.CUP
         self.cost = 3
@@ -165,6 +178,7 @@ class FamilyRestaurant(Card):
 
 class AppleOrchard(Card):
     def __init__(self):
+        self.name = "Apple Orchard"
         self.color = Color.BLUE
         self.symbol = Symbol.WHEAT
         self.cost = 3
@@ -175,6 +189,7 @@ class AppleOrchard(Card):
 
 class FruitVegetableMarket(Card):
     def __init__(self):
+        self.name = "Fruit and Vegetable Market"
         self.color = Color.GREEN
         self.symbol = Symbol.FRUIT
         self.cost = 2
@@ -186,6 +201,7 @@ class FruitVegetableMarket(Card):
 
 class TrainStation(Card):
     def __init__(self):
+        self.name = "Train Station"
         self.color = Color.GOLD
         self.symbol = Symbol.TOWER
         self.cost = 4
@@ -196,6 +212,7 @@ class TrainStation(Card):
 
 class ShoppingMall(Card):
     def __init__(self):
+        self.name = "Shopping Mall"
         self.color = Color.GOLD
         self.symbol = Symbol.TOWER
         self.cost = 10
@@ -204,6 +221,7 @@ class ShoppingMall(Card):
     def revenue(self, hand: List[Card], num_players: int) -> int:
         return 0
 
+    @staticmethod
     def bonus(hand: List[Card]) -> int:
         if any(isinstance(c, ShoppingMall) for c in hand):
             return 1
@@ -212,6 +230,7 @@ class ShoppingMall(Card):
 
 class AmusementPark(Card):
     def __init__(self):
+        self.name = "Amusement Park"
         self.color = Color.GOLD
         self.symbol = Symbol.TOWER
         self.cost = 16
@@ -222,6 +241,7 @@ class AmusementPark(Card):
 
 class RadioTower(Card):
     def __init__(self):
+        self.name = "Radio Tower"
         self.color = Color.GOLD
         self.symbol = Symbol.TOWER
         self.cost = 22

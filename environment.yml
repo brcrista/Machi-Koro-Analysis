@@ -6,6 +6,7 @@ dependencies:
   - jupyter
   - jupyterlab
   - matplotlib
+  - mypy
   - numpy
   - pandas
   - pip
