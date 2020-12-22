@@ -1,3 +1,4 @@
+from abc import ABCMeta, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
 from typing import List, Set
@@ -19,16 +20,15 @@ class Symbol(Enum):
     FACTORY = 6
     FRUIT = 7
 
-class Card: ...
-
-@dataclass
-class Card:
+# @dataclass
+class Card(metaclass=ABCMeta):
     color: Color
     symbol: Symbol
     cost: int
     activates_on: Set[int]
 
-    def revenue(self, hand: List[Card], num_players: int) -> int:
+    @abstractmethod
+    def revenue(self, hand: List['Card'], num_players: int) -> int:
         pass
 
 class WheatField(Card):
@@ -204,6 +204,7 @@ class ShoppingMall(Card):
     def revenue(self, hand: List[Card], num_players: int) -> int:
         return 0
 
+    @staticmethod
     def bonus(hand: List[Card]) -> int:
         if any(isinstance(c, ShoppingMall) for c in hand):
             return 1
