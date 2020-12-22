@@ -53,7 +53,7 @@ class Ranch(Card):
 
 class Bakery(Card):
     def __init__(self):
-        self.color = Color.BLUE
+        self.color = Color.GREEN
         self.symbol = Symbol.BOX
         self.cost = 1
         self.activates_on = set([2, 3])
