@@ -249,3 +249,25 @@ class RadioTower(Card):
 
     def revenue(self, hand: List[Card], num_players: int) -> int:
         return 0
+
+distinct_cards = [
+    WheatField(),
+    Ranch(),
+    Bakery(),
+    Cafe(),
+    ConvenienceStore(),
+    Forest(),
+    Stadium(),
+    TvStation(),
+    BusinessCenter(),
+    CheeseFactory(),
+    FurnitureFactory(),
+    Mine(),
+    FamilyRestaurant(),
+    AppleOrchard(),
+    FruitVegetableMarket(),
+    TrainStation(),
+    ShoppingMall(),
+    AmusementPark(),
+    RadioTower()
+]
