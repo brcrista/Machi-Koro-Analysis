@@ -28,7 +28,7 @@ class Card(metaclass=ABCMeta):
     activates_on: Set[int]
 
     @abstractmethod
-    def revenue(self, hand: List['Card'], num_players: int) -> int:
+    def revenue(self, hand: List["Card"], num_players: int) -> int:
         pass
 
 class WheatField(Card):
