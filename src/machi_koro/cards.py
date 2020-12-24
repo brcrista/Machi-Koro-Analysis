@@ -73,7 +73,7 @@ class Cafe(Card):
         self.color = Color.RED
         self.symbol = Symbol.CUP
         self.cost = 2
-        self.activates_on = set([2, 3])
+        self.activates_on = set([3])
 
     def revenue(self, hand: List[Card], num_players: int) -> int:
         return 1 + ShoppingMall.bonus(hand)
