@@ -237,3 +237,19 @@ fast_train_to_factory = Strategy(
         cards.ShoppingMall(),
     ]),
     roll_two=roll_two_always_after_train_station)
+
+fast_train_to_big_cheese = Strategy(
+    buy=_from_build_order([
+        cards.Ranch(),
+        cards.Ranch(),
+        cards.Ranch(),
+        cards.Ranch(),
+        cards.TrainStation(),
+        cards.CheeseFactory(),
+        cards.CheeseFactory(),
+        cards.CheeseFactory(),
+        cards.AmusementPark(),
+        cards.RadioTower(),
+        cards.ShoppingMall(),
+    ]),
+    roll_two=roll_two_always_after_train_station)
