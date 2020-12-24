@@ -46,7 +46,7 @@ class PlayerState:
         self.coins = 3
         self.num_players = num_players
 
-    def update_my_turn(self, strategy: Strategy, round_number: int) -> None:
+    def update_my_turn(self, strategy: Strategy, round_number: int) -> Optional[Card]:
         two_dice, card_to_buy = strategy(self, round_number)
         self.coins += expected_revenue_my_turn(self.hand, two_dice, self.num_players)
         if card_to_buy is not None:
@@ -54,6 +54,7 @@ class PlayerState:
             self.coins -= card_to_buy.cost
             if self.coins < 0:
                 raise InvalidStrategyError(f"Buying a {card_to_buy.name} in round {round_number} is expected to result in a negative number of coins ({self.coins}).")
+        return card_to_buy
 
     def update_other_turn(self, round_number: int) -> None:
         # Assume that other players always roll one die.
@@ -71,20 +72,15 @@ def simulate(strategy: Strategy, num_players: int) -> pd.DataFrame:
         raise ValueError()
 
     player_state = PlayerState(num_players)
-    game_log = {
-        "Round": [],
-        "Turn": [],
-        "Coins": [],
-        "# Cards": [],
-        "# Victory Cards": []
-    }
-
     victory_cards, cards = _partition(player_state.hand, _is_victory_card)
-    game_log["Round"] = [0]
-    game_log["Turn"] = [None]
-    game_log["Coins"] = [player_state.coins]
-    game_log["# Cards"] = [len(cards)]
-    game_log["# Victory Cards"] = [len(victory_cards)]
+    game_log = {
+        "Round": [0],
+        "Turn": [None],
+        "Coins": [player_state.coins],
+        "# Cards": [len(cards)],
+        "# Victory Cards": [len(victory_cards)],
+        "Bought Card": [None]
+    }
 
     # Buying no cards except for the victory cards, in any order, is expected to win in well under 100 rounds.
     MAX_ROUNDS = 100
@@ -92,9 +88,10 @@ def simulate(strategy: Strategy, num_players: int) -> pd.DataFrame:
         for turn_number in range(1, player_state.num_players + 1):
             # Assume the one player we're keeping track of goes first in each round.
             if turn_number == 1:
-                player_state.update_my_turn(strategy, round_number)
+                bought_card = player_state.update_my_turn(strategy, round_number)
             else:
                 player_state.update_other_turn(round_number)
+                bought_card = None
 
             victory_cards, cards = _partition(player_state.hand, _is_victory_card)
             game_log["Round"].append(round_number)
@@ -102,6 +99,7 @@ def simulate(strategy: Strategy, num_players: int) -> pd.DataFrame:
             game_log["Coins"].append(player_state.coins)
             game_log["# Cards"].append(len(cards))
             game_log["# Victory Cards"].append(len(victory_cards))
+            game_log["Bought Card"].append(bought_card)
             if player_state.is_winner():
                 return pd.DataFrame(game_log)
     raise InvalidStrategyError("The strategy does not buy all four victory cards within 100 rounds.")
