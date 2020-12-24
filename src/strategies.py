@@ -16,6 +16,13 @@ def expected_revenue_other_turn(hand: List[Card], two_dice: bool, num_players: i
     """The average revenue a hand will yield on another player's turn."""
     return sum(expected_value_other_turn(c, hand, two_dice, num_players) for c in hand)
 
+def gross_expected_revenue(hand: List[Card], two_dice: bool, num_players: int) -> float:
+    """The average revenue a hand will yield on a turn."""
+    my_turn = expected_revenue_my_turn(hand, two_dice, num_players)
+    # Assume the other players always roll one die.
+    other_turn = expected_revenue_other_turn(hand, False, num_players)
+    return (my_turn + (num_players - 1) * other_turn) / num_players
+
 def _is_victory_card(card):
     return card.color == Color.GOLD
 
@@ -84,6 +91,7 @@ def simulate(strategy: Strategy, num_players: int) -> pd.DataFrame:
         "Round": [0],
         "Turn": [None],
         "Coins": [player_state.coins],
+        "Expected Coins per Roll": [gross_expected_revenue(player_state.hand, strategy.roll_two(player_state), num_players)],
         "# Cards": [len(cards)],
         "# Victory Cards": [len(victory_cards)],
         "Bought Card": [None]
@@ -104,6 +112,7 @@ def simulate(strategy: Strategy, num_players: int) -> pd.DataFrame:
             game_log["Round"].append(round_number)
             game_log["Turn"].append(turn_number)
             game_log["Coins"].append(player_state.coins)
+            game_log["Expected Coins per Roll"].append(gross_expected_revenue(player_state.hand, strategy.roll_two(player_state), num_players))
             game_log["# Cards"].append(len(cards))
             game_log["# Victory Cards"].append(len(victory_cards))
             game_log["Bought Card"].append(bought_card)
