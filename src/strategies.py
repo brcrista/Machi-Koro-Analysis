@@ -21,10 +21,16 @@ def _is_victory_card(card):
 
 VICTORY_CARDS = [c for c in cards.distinct_cards if _is_victory_card(c)]
 
-# A strategy maps a round number to whether to roll two dice and a card to buy.
-# While not technically needed (we *could* just math out every round number for the cards we want),
-# pass in the player state to make implementing a strategy easier.
-Strategy = Callable[["PlayerState", int], Tuple[bool, Optional[Card]]]
+class Strategy:
+    # The "buy" part of a strategy maps a round number to whether to roll two dice and a card to buy.
+    # While not technically needed (we *could* just math out every round number for the cards we want),
+    # pass in the player state to make implementing a strategy easier.
+    Buy = Callable[["PlayerState", int], Optional[Card]]
+    RollTwo = Callable[["PlayerState"], bool]
+
+    def __init__(self, buy: Buy, roll_two: RollTwo):
+        self.buy = buy
+        self.roll_two = roll_two
 
 class InvalidStrategyError(Exception):
     """
@@ -47,8 +53,9 @@ class PlayerState:
         self.num_players = num_players
 
     def update_my_turn(self, strategy: Strategy, round_number: int) -> Optional[Card]:
-        two_dice, card_to_buy = strategy(self, round_number)
+        two_dice = strategy.roll_two(self)
         self.coins += expected_revenue_my_turn(self.hand, two_dice, self.num_players)
+        card_to_buy = strategy.buy(self, round_number)
         if card_to_buy is not None:
             self.hand.append(card_to_buy)
             self.coins -= card_to_buy.cost
@@ -111,24 +118,29 @@ def _next_card(build_order: List[Card], player_state):
     else:
         return None
 
-def _from_build_order(build_order: List[Card], roll_two) -> Strategy:
+def _from_build_order(build_order: List[Card]):
     """
-    Implement a strategy by defining a list of cards to buy in order
+    Implement a buying strategy by defining a list of cards to buy in order
     and a predicate for when to roll two dice.
     """
     next_card = None
-    def strategy(player_state, round_number) -> Tuple[bool, Card]:
+    def buy_strategy(player_state, round_number) -> Tuple[bool, Card]:
         nonlocal next_card
         if next_card is None:
             next_card = build_order.pop(0)
-        two_dice = roll_two(player_state)
         if player_state.coins >= next_card.cost:
-            result = (two_dice, next_card)
+            result = next_card
             next_card = None
             return result
         else:
-            return (two_dice, None)
-    return strategy
+            return None
+    return buy_strategy
+
+def roll_two_never(player_state):
+    return False
+
+def roll_two_always_after_train_station(player_state):
+    return cards.TrainStation() in player_state.hand
 
 # Buy a shopping mall first since it adds a bonus to our bakery.
 # We expect 1/6 + 1/12 = 1/4 coins per roll = 1 coin per turn in a 4-player game.
@@ -136,15 +148,17 @@ def _from_build_order(build_order: List[Card], roll_two) -> Strategy:
 # giving us 1/6 + 1/6 = 1/3 coins per roll = 4/3 coins per turn.
 # With this optimization, we expect to win one round faster (40 vs. 41).
 # The radio tower will also bump up our expected coins, but we aren't accounting for that yet in our model.
-buy_nothing = _from_build_order([
+buy_nothing = Strategy(
+    buy=_from_build_order([
         cards.ShoppingMall(),
         cards.RadioTower(),
         cards.TrainStation(),
         cards.AmusementPark()
-    ],
-    roll_two=lambda player_state: False)
+    ]),
+    roll_two=roll_two_never)
 
-buy_everything = _from_build_order([
+buy_everything = Strategy(
+    buy=_from_build_order([
         cards.WheatField(),
         cards.Ranch(),
         cards.Bakery(),
@@ -164,10 +178,11 @@ buy_everything = _from_build_order([
         cards.Mine(),
         cards.AmusementPark(),
         cards.RadioTower()
-    ],
-    roll_two=lambda player_state: cards.TrainStation() in player_state.hand)
+    ]),
+    roll_two=roll_two_always_after_train_station)
 
-highest_margin = _from_build_order([
+highest_margin = Strategy(
+    buy=_from_build_order([
         cards.Ranch(),
         cards.Cafe(),
         cards.Ranch(),
@@ -181,10 +196,11 @@ highest_margin = _from_build_order([
         cards.RadioTower(),
         cards.TrainStation(),
         cards.AmusementPark(),
-    ],
-    roll_two=lambda player_state: False)
+    ]),
+    roll_two=roll_two_never)
 
-big_convenience_store = _from_build_order([
+big_convenience_store = Strategy(
+    buy=_from_build_order([
         cards.WheatField(),
         cards.Ranch(),
         cards.Ranch(),
@@ -199,10 +215,11 @@ big_convenience_store = _from_build_order([
         cards.RadioTower(),
         cards.TrainStation(),
         cards.AmusementPark(),
-    ],
-    roll_two=lambda player_state: False)
+    ]),
+    roll_two=roll_two_never)
 
-fast_train_to_factory =_from_build_order([
+fast_train_to_factory = Strategy(
+    buy=_from_build_order([
         cards.Ranch(),
         cards.Ranch(),
         cards.Forest(),
@@ -216,5 +233,5 @@ fast_train_to_factory =_from_build_order([
         cards.AmusementPark(),
         cards.RadioTower(),
         cards.ShoppingMall(),
-    ],
-    roll_two=lambda player_state: cards.TrainStation() in player_state.hand)
+    ]),
+    roll_two=roll_two_always_after_train_station)
