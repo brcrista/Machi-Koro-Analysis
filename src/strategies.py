@@ -116,14 +116,14 @@ def _from_build_order(build_order: List[Card], roll_two) -> Strategy:
     Implement a strategy by defining a list of cards to buy in order
     and a predicate for when to roll two dice.
     """
-    def _strategy(player_state, round_number) -> Tuple[bool, Card]:
+    def strategy(player_state, round_number) -> Tuple[bool, Card]:
         next_card = _next_card(build_order, player_state)
         two_dice = roll_two(player_state)
         if player_state.coins >= next_card.cost:
             return (two_dice, next_card)
         else:
             return (two_dice, None)
-    return _strategy
+    return strategy
 
 # Buy a shopping mall first since it adds a bonus to our bakery.
 # We expect 1/6 + 1/12 = 1/4 coins per roll = 1 coin per turn in a 4-player game.
