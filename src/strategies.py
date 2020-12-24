@@ -4,7 +4,7 @@ from analysis import expected_value_my_turn, expected_value_other_turn
 from dataclasses import dataclass
 from machi_koro import cards
 from machi_koro.cards import Card, Color
-from typing import Callable, List, Tuple
+from typing import Callable, List, Optional, Tuple
 
 def expected_revenue_my_turn(hand: List[Card], two_dice: bool, num_players: int) -> float:
     """The average revenue a hand will yield on your turn."""
@@ -20,7 +20,15 @@ def _is_victory_card(card):
 VICTORY_CARDS = [c for c in cards.distinct_cards if _is_victory_card(c)]
 
 # A strategy maps a round number to whether to roll two dice and a card to buy.
-Strategy = Callable[[int], Tuple[bool, Card]]
+Strategy = Callable[[int], Tuple[bool, Optional[Card]]]
+
+class InvalidStrategyError(Exception):
+    """
+    An exception raised when a `Strategy` tries to buy something it doesn't have the money for
+    or doesn't try to buy all victory cards.
+    """
+    def __init__(self, message):
+        self.message = message
 
 @dataclass
 class PlayerState:
@@ -39,8 +47,11 @@ class PlayerState:
     def update_my_turn(self, round_number: int) -> None:
         two_dice, card_to_buy = self.strategy(round_number)
         self.coins += expected_revenue_my_turn(self.hand, two_dice, self.num_players)
-        self.hand.append(card_to_buy)
-        self.coins -= card_to_buy.cost
+        if card_to_buy is not None:
+            self.hand.append(card_to_buy)
+            self.coins -= card_to_buy.cost
+            if self.coins < 0:
+                raise InvalidStrategyError(f"Buying a {card_to_buy.name} in round {round_number} is expected to result in a negative number of coins ({self.coins}).")
 
     def update_other_turn(self, round_number: int) -> None:
         # Assume that other players always roll one die.
