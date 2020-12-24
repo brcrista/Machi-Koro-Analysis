@@ -201,3 +201,20 @@ big_convenience_store = _from_build_order([
         cards.AmusementPark(),
     ],
     roll_two=lambda player_state: False)
+
+fast_train_to_factory =_from_build_order([
+        cards.Ranch(),
+        cards.Ranch(),
+        cards.Forest(),
+        cards.TrainStation(),
+        cards.Ranch(),
+        cards.CheeseFactory(),
+        cards.Forest(),
+        cards.FurnitureFactory(),
+        cards.CheeseFactory(),
+        cards.Forest(),
+        cards.AmusementPark(),
+        cards.RadioTower(),
+        cards.ShoppingMall(),
+    ],
+    roll_two=lambda player_state: cards.TrainStation() in player_state.hand)
