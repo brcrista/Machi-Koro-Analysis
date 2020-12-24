@@ -1,3 +1,5 @@
+import math
+
 import pandas as pd
 
 from analysis import expected_value_my_turn, expected_value_other_turn
@@ -61,11 +63,6 @@ class PlayerState:
     def is_winner(self) -> bool:
         return all(c in self.hand for c in VICTORY_CARDS)
 
-def _count(start: int):
-    while True:
-        yield start
-        start += 1
-
 def _partition(xs, predicate):
     return [x for x in xs if predicate(x)], [x for x in xs if not predicate(x)]
 
@@ -89,7 +86,9 @@ def simulate(strategy: Strategy, num_players: int) -> pd.DataFrame:
     game_log["# Cards"] = [len(cards)]
     game_log["# Victory Cards"] = [len(victory_cards)]
 
-    for round_number in _count(1):
+    # Buying no cards except for the victory cards, in any order, is expected to win in well under 100 rounds.
+    MAX_ROUNDS = 100
+    for round_number in range(1, MAX_ROUNDS + 1):
         for turn_number in range(1, player_state.num_players + 1):
             # Assume the one player we're keeping track of goes first in each round.
             if turn_number == 1:
@@ -105,7 +104,7 @@ def simulate(strategy: Strategy, num_players: int) -> pd.DataFrame:
             game_log["# Victory Cards"].append(len(victory_cards))
             if player_state.is_winner():
                 return pd.DataFrame(game_log)
-    assert False
+    raise InvalidStrategyError("The strategy does not buy all four victory cards within 100 rounds.")
 
 def to_strategy(xs: List[Tuple[Card, bool]]):
     def _strategy(i: int):
@@ -116,12 +115,16 @@ def to_strategy(xs: List[Tuple[Card, bool]]):
 
 def buy_nothing(round_number):
     # Buy a shopping mall first since it adds a bonus to our bakery.
-    # We expect 0.17 + 0.08 = 0.25 coins per roll = 1.00 coin per turn in a 4-player game.
+    # We expect 1/6 + 1/12 = 1/4 coins per roll = 1 coin per turn in a 4-player game.
+    # Buying the shopping mall will double our bakery's expected value,
+    # giving us 1/6 + 1/6 = 1/3 coins per roll = 4/3 coins per turn.
     # The radio tower will also bump up our expected coins, but we aren't accounting for that yet in our model.
-    SHOPPING_MALL_ROUND_NUMBER = cards.ShoppingMall().cost - 3 + 1
-    RADIO_TOWER_ROUND_NUMBER = SHOPPING_MALL_ROUND_NUMBER + cards.RadioTower().cost + 1
-    TRAIN_STATION_ROUND_NUMBER = SHOPPING_MALL_ROUND_NUMBER + RADIO_TOWER_ROUND_NUMBER + cards.TrainStation().cost + 1
-    AMUSEMENT_PARK_ROUND_NUMBER = SHOPPING_MALL_ROUND_NUMBER + RADIO_TOWER_ROUND_NUMBER + TRAIN_STATION_ROUND_NUMBER + cards.AmusementPark().cost + 1
+    FIRST_ROUND_NUMBER = 1
+    SHOPPING_MALL_ROUND_NUMBER:  int = FIRST_ROUND_NUMBER + cards.ShoppingMall().cost - 3
+    RADIO_TOWER_ROUND_NUMBER:    int = math.ceil(SHOPPING_MALL_ROUND_NUMBER + cards.RadioTower().cost * 3 / 4)
+    TRAIN_STATION_ROUND_NUMBER:  int = math.ceil(RADIO_TOWER_ROUND_NUMBER + cards.TrainStation().cost * 3 / 4)
+    AMUSEMENT_PARK_ROUND_NUMBER: int = math.ceil(TRAIN_STATION_ROUND_NUMBER + cards.AmusementPark().cost * 3 / 4)
+
     if round_number == SHOPPING_MALL_ROUND_NUMBER:
         return (False, cards.ShoppingMall())
     if round_number == RADIO_TOWER_ROUND_NUMBER:
