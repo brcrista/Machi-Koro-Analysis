@@ -120,13 +120,6 @@ def simulate(strategy: Strategy, num_players: int) -> pd.DataFrame:
                 return pd.DataFrame(game_log)
     raise InvalidStrategyError("The strategy does not buy all four victory cards within 100 rounds.")
 
-def _next_card(build_order: List[Card], player_state):
-    for card in build_order:
-        if not card in player_state.hand:
-            return card
-    else:
-        return None
-
 def _from_build_order(build_order: List[Card]):
     """
     Implement a buying strategy by defining a list of cards to buy in order
