@@ -171,6 +171,21 @@ buy_everything = _from_build_order([
     ],
     roll_two=lambda player_state: cards.TrainStation() in player_state.hand)
 
+highest_margin = _from_build_order([
+        cards.Ranch(),
+        cards.Cafe(),
+        cards.Ranch(),
+        cards.Cafe(),
+        cards.Cafe(),
+        cards.ShoppingMall(),
+        cards.WheatField(),
+        cards.Stadium(),
+        cards.RadioTower(),
+        cards.TrainStation(),
+        cards.AmusementPark(),
+    ],
+    roll_two=lambda player_state: False)
+
 big_convenience_store = _from_build_order([
         cards.WheatField(),
         cards.Ranch(),
@@ -183,23 +198,6 @@ big_convenience_store = _from_build_order([
         cards.Bakery(),
         cards.ShoppingMall(),
         cards.ConvenienceStore(),
-        cards.RadioTower(),
-        cards.TrainStation(),
-        cards.AmusementPark(),
-    ],
-    roll_two=lambda player_state: False)
-
-big_ranch = _from_build_order([
-        cards.Ranch(),
-        cards.Cafe(),
-        cards.Ranch(),
-        cards.Cafe(),
-        cards.Ranch(),
-        cards.Cafe(),
-        cards.WheatField(),
-        cards.Forest(),
-        cards.Stadium(),
-        cards.ShoppingMall(),
         cards.RadioTower(),
         cards.TrainStation(),
         cards.AmusementPark(),
