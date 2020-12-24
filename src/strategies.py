@@ -116,11 +116,16 @@ def _from_build_order(build_order: List[Card], roll_two) -> Strategy:
     Implement a strategy by defining a list of cards to buy in order
     and a predicate for when to roll two dice.
     """
+    next_card = None
     def strategy(player_state, round_number) -> Tuple[bool, Card]:
-        next_card = _next_card(build_order, player_state)
+        nonlocal next_card
+        if next_card is None:
+            next_card = build_order.pop(0)
         two_dice = roll_two(player_state)
         if player_state.coins >= next_card.cost:
-            return (two_dice, next_card)
+            result = (two_dice, next_card)
+            next_card = None
+            return result
         else:
             return (two_dice, None)
     return strategy
@@ -129,7 +134,6 @@ def _from_build_order(build_order: List[Card], roll_two) -> Strategy:
 # We expect 1/6 + 1/12 = 1/4 coins per roll = 1 coin per turn in a 4-player game.
 # Buying the shopping mall will double our bakery's expected value,
 # giving us 1/6 + 1/6 = 1/3 coins per roll = 4/3 coins per turn.
-# With this optimization, we expect to win one round faster (40 vs. 41).
 # With this optimization, we expect to win one round faster (40 vs. 41).
 # The radio tower will also bump up our expected coins, but we aren't accounting for that yet in our model.
 buy_nothing = _from_build_order([
@@ -166,3 +170,38 @@ buy_everything = _from_build_order([
         cards.RadioTower()
     ],
     roll_two=lambda player_state: cards.TrainStation() in player_state.hand)
+
+big_convenience_store = _from_build_order([
+        cards.WheatField(),
+        cards.Ranch(),
+        cards.Ranch(),
+        cards.ConvenienceStore(),
+        cards.ConvenienceStore(),
+        cards.Ranch(),
+        cards.ConvenienceStore(),
+        cards.Forest(),
+        cards.Bakery(),
+        cards.ShoppingMall(),
+        cards.ConvenienceStore(),
+        cards.RadioTower(),
+        cards.TrainStation(),
+        cards.AmusementPark(),
+    ],
+    roll_two=lambda player_state: False)
+
+big_ranch = _from_build_order([
+        cards.Ranch(),
+        cards.Cafe(),
+        cards.Ranch(),
+        cards.Cafe(),
+        cards.Ranch(),
+        cards.Cafe(),
+        cards.WheatField(),
+        cards.Forest(),
+        cards.Stadium(),
+        cards.ShoppingMall(),
+        cards.RadioTower(),
+        cards.TrainStation(),
+        cards.AmusementPark(),
+    ],
+    roll_two=lambda player_state: False)
