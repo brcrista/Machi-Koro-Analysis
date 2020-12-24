@@ -22,7 +22,9 @@ def _is_victory_card(card):
 VICTORY_CARDS = [c for c in cards.distinct_cards if _is_victory_card(c)]
 
 # A strategy maps a round number to whether to roll two dice and a card to buy.
-Strategy = Callable[[int], Tuple[bool, Optional[Card]]]
+# While not technically needed (we *could* just math out every round number for the cards we want),
+# pass in the player state to make implementing a strategy easier.
+Strategy = Callable[["PlayerState", int], Tuple[bool, Optional[Card]]]
 
 class InvalidStrategyError(Exception):
     """
@@ -36,18 +38,16 @@ class InvalidStrategyError(Exception):
 class PlayerState:
     hand: List[Card]
     coins: float
-    strategy: Strategy
     num_players: int
 
-    def __init__(self, strategy: Strategy, num_players: int):
+    def __init__(self, num_players: int):
         # This is what each player gets for the start of the game.
         self.hand = [cards.WheatField(), cards.Bakery()]
         self.coins = 3
-        self.strategy = strategy
         self.num_players = num_players
 
-    def update_my_turn(self, round_number: int) -> None:
-        two_dice, card_to_buy = self.strategy(round_number)
+    def update_my_turn(self, strategy: Strategy, round_number: int) -> None:
+        two_dice, card_to_buy = strategy(self, round_number)
         self.coins += expected_revenue_my_turn(self.hand, two_dice, self.num_players)
         if card_to_buy is not None:
             self.hand.append(card_to_buy)
@@ -70,7 +70,7 @@ def simulate(strategy: Strategy, num_players: int) -> pd.DataFrame:
     if not (2 <= num_players <= 4):
         raise ValueError()
 
-    player_state = PlayerState(strategy, num_players)
+    player_state = PlayerState(num_players)
     game_log = {
         "Round": [],
         "Turn": [],
@@ -92,7 +92,7 @@ def simulate(strategy: Strategy, num_players: int) -> pd.DataFrame:
         for turn_number in range(1, player_state.num_players + 1):
             # Assume the one player we're keeping track of goes first in each round.
             if turn_number == 1:
-                player_state.update_my_turn(round_number)
+                player_state.update_my_turn(strategy, round_number)
             else:
                 player_state.update_other_turn(round_number)
 
@@ -106,32 +106,65 @@ def simulate(strategy: Strategy, num_players: int) -> pd.DataFrame:
                 return pd.DataFrame(game_log)
     raise InvalidStrategyError("The strategy does not buy all four victory cards within 100 rounds.")
 
-def to_strategy(xs: List[Tuple[Card, bool]]):
-    def _strategy(i: int):
-        # Turns start from 1, so re-index the 0-based list.
-        xs_from_1 = [None] + xs
-        return xs_from_1[i]
+def _next_card(build_order: List[Card], player_state):
+    for card in build_order:
+        if not card in player_state.hand:
+            return card
+    else:
+        return None
+
+def _from_build_order(build_order: List[Card], roll_two) -> Strategy:
+    """
+    Implement a strategy by defining a list of cards to buy in order
+    and a predicate for when to roll two dice.
+    """
+    def _strategy(player_state, round_number) -> Tuple[bool, Card]:
+        next_card = _next_card(build_order, player_state)
+        two_dice = roll_two(player_state)
+        if player_state.coins >= next_card.cost:
+            return (two_dice, next_card)
+        else:
+            return (two_dice, None)
     return _strategy
 
-def buy_nothing(round_number):
-    # Buy a shopping mall first since it adds a bonus to our bakery.
-    # We expect 1/6 + 1/12 = 1/4 coins per roll = 1 coin per turn in a 4-player game.
-    # Buying the shopping mall will double our bakery's expected value,
-    # giving us 1/6 + 1/6 = 1/3 coins per roll = 4/3 coins per turn.
-    # The radio tower will also bump up our expected coins, but we aren't accounting for that yet in our model.
-    FIRST_ROUND_NUMBER = 1
-    SHOPPING_MALL_ROUND_NUMBER:  int = FIRST_ROUND_NUMBER + cards.ShoppingMall().cost - 3
-    RADIO_TOWER_ROUND_NUMBER:    int = math.ceil(SHOPPING_MALL_ROUND_NUMBER + cards.RadioTower().cost * 3 / 4)
-    TRAIN_STATION_ROUND_NUMBER:  int = math.ceil(RADIO_TOWER_ROUND_NUMBER + cards.TrainStation().cost * 3 / 4)
-    AMUSEMENT_PARK_ROUND_NUMBER: int = math.ceil(TRAIN_STATION_ROUND_NUMBER + cards.AmusementPark().cost * 3 / 4)
+# Buy a shopping mall first since it adds a bonus to our bakery.
+# We expect 1/6 + 1/12 = 1/4 coins per roll = 1 coin per turn in a 4-player game.
+# Buying the shopping mall will double our bakery's expected value,
+# giving us 1/6 + 1/6 = 1/3 coins per roll = 4/3 coins per turn.
+# With this optimization, we expect to win one round faster (40 vs. 41).
+# With this optimization, we expect to win one round faster (40 vs. 41).
+# The radio tower will also bump up our expected coins, but we aren't accounting for that yet in our model.
+buy_nothing = _from_build_order([
+        cards.ShoppingMall(),
+        cards.RadioTower(),
+        cards.TrainStation(),
+        cards.AmusementPark()
+    ],
+    roll_two=lambda player_state: False)
 
-    if round_number == SHOPPING_MALL_ROUND_NUMBER:
-        return (False, cards.ShoppingMall())
-    if round_number == RADIO_TOWER_ROUND_NUMBER:
-        return (False, cards.RadioTower())
-    if round_number == TRAIN_STATION_ROUND_NUMBER:
-        return (False, cards.TrainStation())
-    if round_number == AMUSEMENT_PARK_ROUND_NUMBER:
-        return (False, cards.AmusementPark())
-    else:
-        return (False, None)
+buy_everything = _from_build_order([
+        cards.WheatField(),
+        cards.Ranch(),
+        cards.Ranch(),
+        cards.Bakery(),
+        cards.Cafe(),
+        cards.ConvenienceStore(),
+        cards.Forest(),
+        cards.Forest(),
+        cards.Stadium(),
+        # cards.TvStation(),
+        # cards.BusinessCenter(),
+        cards.CheeseFactory(),
+        cards.FurnitureFactory(),
+        cards.AppleOrchard(),
+        cards.TrainStation(),
+        cards.Mine(),
+        cards.FruitVegetableMarket(),
+        cards.ShoppingMall(),
+        cards.Mine(),
+        cards.AmusementPark(),
+        cards.AppleOrchard(),
+        cards.Mine(),
+        cards.RadioTower()
+    ],
+    roll_two=lambda player_state: cards.TrainStation() in player_state.hand)
