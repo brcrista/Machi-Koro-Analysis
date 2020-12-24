@@ -150,106 +150,114 @@ def roll_two_always_after_train_station(player_state):
 # giving us 1/6 + 1/6 = 1/3 coins per roll = 4/3 coins per turn.
 # With this optimization, we expect to win one round faster (40 vs. 41).
 # The radio tower will also bump up our expected coins, but we aren't accounting for that yet in our model.
-buy_nothing = Strategy(
-    buy=_from_build_order([
-        cards.ShoppingMall(),
-        cards.RadioTower(),
-        cards.TrainStation(),
-        cards.AmusementPark()
-    ]),
-    roll_two=roll_two_never)
+def buy_nothing():
+    # These need to be functions so they can be rerunnable with the `nonlocal`
+    # in `_from_build_order`.
+    return Strategy(
+        buy=_from_build_order([
+            cards.ShoppingMall(),
+            cards.RadioTower(),
+            cards.TrainStation(),
+            cards.AmusementPark()
+        ]),
+        roll_two=roll_two_never)
 
-buy_everything = Strategy(
-    buy=_from_build_order([
-        cards.WheatField(),
-        cards.Ranch(),
-        cards.Bakery(),
-        cards.Cafe(),
-        cards.ConvenienceStore(),
-        cards.Forest(),
-        cards.Stadium(),
-        # cards.TvStation(),
-        # cards.BusinessCenter(),
-        cards.CheeseFactory(),
-        cards.FurnitureFactory(),
-        cards.AppleOrchard(),
-        cards.TrainStation(),
-        cards.Mine(),
-        cards.FruitVegetableMarket(),
-        cards.ShoppingMall(),
-        cards.Mine(),
-        cards.AmusementPark(),
-        cards.RadioTower()
-    ]),
-    roll_two=roll_two_always_after_train_station)
+def buy_everything():
+    return Strategy(
+        buy=_from_build_order([
+            cards.WheatField(),
+            cards.Ranch(),
+            cards.Bakery(),
+            cards.Cafe(),
+            cards.ConvenienceStore(),
+            cards.Forest(),
+            cards.Stadium(),
+            # cards.TvStation(),
+            # cards.BusinessCenter(),
+            cards.CheeseFactory(),
+            cards.FurnitureFactory(),
+            cards.AppleOrchard(),
+            cards.TrainStation(),
+            cards.Mine(),
+            cards.FruitVegetableMarket(),
+            cards.ShoppingMall(),
+            cards.Mine(),
+            cards.AmusementPark(),
+            cards.RadioTower()
+        ]),
+        roll_two=roll_two_always_after_train_station)
 
-highest_margin = Strategy(
-    buy=_from_build_order([
-        cards.Ranch(),
-        cards.Cafe(),
-        cards.Ranch(),
-        cards.Ranch(),
-        cards.Cafe(),
-        cards.Ranch(),
-        cards.ShoppingMall(),
-        cards.Ranch(),
-        cards.WheatField(),
-        cards.WheatField(),
-        cards.RadioTower(),
-        cards.TrainStation(),
-        cards.AmusementPark(),
-    ]),
-    roll_two=roll_two_never)
+def highest_margin():
+    return Strategy(
+        buy=_from_build_order([
+            cards.Ranch(),
+            cards.Cafe(),
+            cards.Ranch(),
+            cards.Ranch(),
+            cards.Cafe(),
+            cards.Ranch(),
+            cards.ShoppingMall(),
+            cards.Ranch(),
+            cards.WheatField(),
+            cards.WheatField(),
+            cards.RadioTower(),
+            cards.TrainStation(),
+            cards.AmusementPark(),
+        ]),
+        roll_two=roll_two_never)
 
-big_convenience_store = Strategy(
-    buy=_from_build_order([
-        cards.WheatField(),
-        cards.Ranch(),
-        cards.Ranch(),
-        cards.ConvenienceStore(),
-        cards.ConvenienceStore(),
-        cards.Ranch(),
-        cards.ConvenienceStore(),
-        cards.Forest(),
-        cards.Bakery(),
-        cards.ShoppingMall(),
-        cards.ConvenienceStore(),
-        cards.RadioTower(),
-        cards.TrainStation(),
-        cards.AmusementPark(),
-    ]),
-    roll_two=roll_two_never)
+def big_convenience_store():
+    return Strategy(
+        buy=_from_build_order([
+            cards.WheatField(),
+            cards.Ranch(),
+            cards.Ranch(),
+            cards.ConvenienceStore(),
+            cards.ConvenienceStore(),
+            cards.Ranch(),
+            cards.ConvenienceStore(),
+            cards.Forest(),
+            cards.Bakery(),
+            cards.ShoppingMall(),
+            cards.ConvenienceStore(),
+            cards.RadioTower(),
+            cards.TrainStation(),
+            cards.AmusementPark(),
+        ]),
+        roll_two=roll_two_never)
 
-fast_train_to_factory = Strategy(
-    buy=_from_build_order([
-        cards.Ranch(),
-        cards.Ranch(),
-        cards.Forest(),
-        cards.TrainStation(),
-        cards.Ranch(),
-        cards.CheeseFactory(),
-        cards.Forest(),
-        cards.FurnitureFactory(),
-        cards.CheeseFactory(),
-        cards.Forest(),
-        cards.AmusementPark(),
-        cards.RadioTower(),
-        cards.ShoppingMall(),
-    ]),
-    roll_two=roll_two_always_after_train_station)
+def fast_train_to_factory():
+    return Strategy(
+        buy=_from_build_order([
+            cards.Ranch(),
+            cards.Ranch(),
+            cards.Forest(),
+            cards.TrainStation(),
+            cards.Ranch(),
+            cards.CheeseFactory(),
+            cards.Forest(),
+            cards.FurnitureFactory(),
+            cards.CheeseFactory(),
+            cards.Forest(),
+            cards.AmusementPark(),
+            cards.RadioTower(),
+            cards.ShoppingMall(),
+        ]),
+        roll_two=roll_two_always_after_train_station)
 
-fast_train_to_big_cheese = Strategy(
-    buy=_from_build_order([
-        cards.Ranch(),
-        cards.Ranch(),
-        cards.Ranch(),
-        cards.Ranch(),
-        cards.TrainStation(),
-        cards.CheeseFactory(),
-        cards.CheeseFactory(),
-        cards.CheeseFactory(),
-        cards.AmusementPark(),
-        cards.RadioTower(),
-        cards.ShoppingMall(),
-    ]),
-    roll_two=roll_two_always_after_train_station)
+def fast_train_to_big_cheese():
+    return Strategy(
+        buy=_from_build_order([
+            cards.Ranch(),
+            cards.Ranch(),
+            cards.Ranch(),
+            cards.Ranch(),
+            cards.TrainStation(),
+            cards.CheeseFactory(),
+            cards.CheeseFactory(),
+            cards.CheeseFactory(),
+            cards.AmusementPark(),
+            cards.RadioTower(),
+            cards.ShoppingMall(),
+        ]),
+        roll_two=roll_two_always_after_train_station)
