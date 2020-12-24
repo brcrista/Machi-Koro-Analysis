@@ -31,6 +31,9 @@ class Card(metaclass=ABCMeta):
     def revenue(self, hand: List["Card"], num_players: int) -> int:
         pass
 
+    def __eq__(self, other):
+        return type(self) == type(other)
+
 class WheatField(Card):
     def __init__(self):
         self.name = "Wheat Field"
