@@ -28,8 +28,11 @@ class Card(metaclass=ABCMeta):
     activates_on: Set[int]
 
     @abstractmethod
-    def revenue(self, hand: List['Card'], num_players: int) -> int:
+    def revenue(self, hand: List["Card"], num_players: int) -> int:
         pass
+
+    def __eq__(self, other):
+        return type(self) == type(other)
 
 class WheatField(Card):
     def __init__(self):
@@ -249,3 +252,25 @@ class RadioTower(Card):
 
     def revenue(self, hand: List[Card], num_players: int) -> int:
         return 0
+
+distinct_cards = [
+    WheatField(),
+    Ranch(),
+    Bakery(),
+    Cafe(),
+    ConvenienceStore(),
+    Forest(),
+    Stadium(),
+    TvStation(),
+    BusinessCenter(),
+    CheeseFactory(),
+    FurnitureFactory(),
+    Mine(),
+    FamilyRestaurant(),
+    AppleOrchard(),
+    FruitVegetableMarket(),
+    TrainStation(),
+    ShoppingMall(),
+    AmusementPark(),
+    RadioTower()
+]

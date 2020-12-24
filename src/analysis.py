@@ -51,14 +51,6 @@ def gross_expected_value(card: Card, hand: List[Card], two_dice: bool, num_playe
     other_turn = expected_value_other_turn(card, hand, two_dice, num_players)
     return (my_turn + (num_players - 1) * other_turn) / num_players
 
-def expected_revenue_my_turn(hand: List[Card], two_dice: bool, num_players: int):
-    """The average revenue a hand will yield on your turn."""
-    return sum(expected_value_my_turn(c, hand, two_dice, num_players) for c in hand)
-
-def expected_revenue_other_turn(hand: List[Card], two_dice: bool, num_players: int):
-    """The average revenue a hand will yield on another player's turn."""
-    return sum(expected_value_other_turn(c, hand, two_dice, num_players) for c in hand)
-
 def fastest_payoff(card: Card, hand: List[Card], num_players: int):
     """The number of rolls needed to pay off a card if the card is activated by every roll."""
     revenue = card.revenue(hand, num_players)
