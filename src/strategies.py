@@ -113,3 +113,22 @@ def to_strategy(xs: List[Tuple[Card, bool]]):
         xs_from_1 = [None] + xs
         return xs_from_1[i]
     return _strategy
+
+def buy_nothing(round_number):
+    # Buy a shopping mall first since it adds a bonus to our bakery.
+    # We expect 0.17 + 0.08 = 0.25 coins per roll = 1.00 coin per turn in a 4-player game.
+    # The radio tower will also bump up our expected coins, but we aren't accounting for that yet in our model.
+    SHOPPING_MALL_ROUND_NUMBER = cards.ShoppingMall().cost - 3 + 1
+    RADIO_TOWER_ROUND_NUMBER = SHOPPING_MALL_ROUND_NUMBER + cards.RadioTower().cost + 1
+    TRAIN_STATION_ROUND_NUMBER = SHOPPING_MALL_ROUND_NUMBER + RADIO_TOWER_ROUND_NUMBER + cards.TrainStation().cost + 1
+    AMUSEMENT_PARK_ROUND_NUMBER = SHOPPING_MALL_ROUND_NUMBER + RADIO_TOWER_ROUND_NUMBER + TRAIN_STATION_ROUND_NUMBER + cards.AmusementPark().cost + 1
+    if round_number == SHOPPING_MALL_ROUND_NUMBER:
+        return (False, cards.ShoppingMall())
+    if round_number == RADIO_TOWER_ROUND_NUMBER:
+        return (False, cards.RadioTower())
+    if round_number == TRAIN_STATION_ROUND_NUMBER:
+        return (False, cards.TrainStation())
+    if round_number == AMUSEMENT_PARK_ROUND_NUMBER:
+        return (False, cards.AmusementPark())
+    else:
+        return (False, None)
