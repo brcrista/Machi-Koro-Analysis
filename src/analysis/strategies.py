@@ -204,16 +204,17 @@ def highest_margin():
     return Strategy(
         buy=_from_build_order([
             cards.Ranch(),
-            cards.Cafe(),
+            cards.WheatField(),
             cards.Ranch(),
             cards.Ranch(),
-            cards.Cafe(),
-            cards.Ranch(),
-            cards.ShoppingMall(),
+            cards.Stadium(),
+            cards.WheatField(),
             cards.Ranch(),
             cards.WheatField(),
-            cards.WheatField(),
+
             cards.RadioTower(),
+            cards.WheatField(),
+            cards.ShoppingMall(),
             cards.TrainStation(),
             cards.AmusementPark(),
         ]),
