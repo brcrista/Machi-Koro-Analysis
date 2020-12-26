@@ -211,7 +211,6 @@ def highest_margin():
             cards.WheatField(),
             cards.Ranch(),
             cards.WheatField(),
-
             cards.RadioTower(),
             cards.WheatField(),
             cards.ShoppingMall(),
