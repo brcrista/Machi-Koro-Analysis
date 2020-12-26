@@ -3,7 +3,7 @@ import os
 import pandas as pd
 
 scriptdir = os.path.dirname(os.path.abspath(__file__))
-project_root = os.path.join(scriptdir, '..')
+project_root = os.path.join(scriptdir, '..', '..')
 data_dir = os.path.join(project_root, 'data')
 
 def read_tsv(filename):

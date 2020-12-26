@@ -2,7 +2,7 @@ import math
 
 import pandas as pd
 
-from analysis import expected_value_my_turn, expected_value_other_turn
+from .cards import expected_value_my_turn, expected_value_other_turn
 from dataclasses import dataclass
 from machi_koro import cards
 from machi_koro.cards import Card, Color

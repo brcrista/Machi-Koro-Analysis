@@ -75,7 +75,10 @@ def expected_payoff(card: Card, hand: List[Card], two_dice: bool, num_players: i
         # The my turn / other turn logic is already built in to `gross_expected_value()`.
         return math.ceil(card.cost / revenue)
 
-def analyze_cards(two_dice: bool) -> pd.DataFrame:
+def run(two_dice: bool) -> pd.DataFrame:
+    """
+    Run the full analysis on all cards.
+    """
     # The factory cards depend on the other cards in your hand.
     # Analyze using one of each kind of card they depend on.
     hand = [
