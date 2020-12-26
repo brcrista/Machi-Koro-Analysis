@@ -2,7 +2,7 @@ import math
 
 import pandas as pd
 
-from analysis import expected_value_my_turn, expected_value_other_turn
+from .cards import expected_value_my_turn, expected_value_other_turn
 from dataclasses import dataclass
 from machi_koro import cards
 from machi_koro.cards import Card, Color
@@ -204,16 +204,17 @@ def highest_margin():
     return Strategy(
         buy=_from_build_order([
             cards.Ranch(),
-            cards.Cafe(),
+            cards.WheatField(),
             cards.Ranch(),
             cards.Ranch(),
-            cards.Cafe(),
-            cards.Ranch(),
-            cards.ShoppingMall(),
+            cards.Stadium(),
+            cards.WheatField(),
             cards.Ranch(),
             cards.WheatField(),
-            cards.WheatField(),
+
             cards.RadioTower(),
+            cards.WheatField(),
+            cards.ShoppingMall(),
             cards.TrainStation(),
             cards.AmusementPark(),
         ]),
@@ -252,8 +253,8 @@ def fast_train_to_factory():
             cards.FurnitureFactory(),
             cards.CheeseFactory(),
             cards.Forest(),
-            cards.AmusementPark(),
             cards.RadioTower(),
+            cards.AmusementPark(),
             cards.ShoppingMall(),
         ]),
         roll_two=roll_two_always_after_train_station)
@@ -269,8 +270,8 @@ def fast_train_to_big_cheese():
             cards.CheeseFactory(),
             cards.CheeseFactory(),
             cards.CheeseFactory(),
-            cards.AmusementPark(),
             cards.RadioTower(),
+            cards.AmusementPark(),
             cards.ShoppingMall(),
         ]),
         roll_two=roll_two_always_after_train_station)

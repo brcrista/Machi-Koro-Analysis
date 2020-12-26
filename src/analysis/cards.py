@@ -1,5 +1,8 @@
 import math
 
+import pandas as pd
+
+from machi_koro import cards
 from machi_koro.cards import Card, Color
 from typing import Iterable, List
 
@@ -71,3 +74,23 @@ def expected_payoff(card: Card, hand: List[Card], two_dice: bool, num_players: i
     else:
         # The my turn / other turn logic is already built in to `gross_expected_value()`.
         return math.ceil(card.cost / revenue)
+
+def run(two_dice: bool) -> pd.DataFrame:
+    """
+    Run the full analysis on all cards.
+    """
+    # The factory cards depend on the other cards in your hand.
+    # Analyze using one of each kind of card they depend on.
+    hand = [
+        cards.WheatField(),
+        cards.Ranch(),
+        cards.Forest()
+    ]
+    return pd.DataFrame({
+        "Card": [card.name for card in cards.distinct_cards],
+        "Expected coins per roll (2p)": [gross_expected_value(card, hand, two_dice, num_players=2) for card in cards.distinct_cards],
+        "Expected coins per roll (3p)": [gross_expected_value(card, hand, two_dice, num_players=3) for card in cards.distinct_cards],
+        "Expected coins per roll (4p)": [gross_expected_value(card, hand, two_dice, num_players=4) for card in cards.distinct_cards],
+        "Minimum rolls for payoff (4p)": [fastest_payoff(card, hand, num_players=4) for card in cards.distinct_cards],
+        "Expected rolls for payoff (4p)": [expected_payoff(card, hand, two_dice, num_players=4) for card in cards.distinct_cards]
+    })
