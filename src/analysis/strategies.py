@@ -6,7 +6,7 @@ from .cards import expected_value_my_turn, expected_value_other_turn
 from dataclasses import dataclass
 from machi_koro import cards
 from machi_koro.cards import Card, Color
-from typing import Callable, List, Optional, Set, Tuple
+from typing import Any, Callable, Dict, List, Optional, Set, Tuple
 
 def expected_revenue_my_turn(hand: List[Card], two_dice: bool, num_players: int) -> float:
     """The average revenue a hand will yield on your turn."""
@@ -90,7 +90,7 @@ def simulate(strategy: Strategy, num_players: int) -> pd.DataFrame:
 
     player_state = PlayerState(num_players)
     victory_cards, cards = _partition(player_state.hand, _is_victory_card)
-    game_log = {
+    game_log: Dict[str, List[Any]] = {
         "Round": [0],
         "Turn": [None],
         "Coins": [player_state.coins],
@@ -139,7 +139,7 @@ def _from_build_order(build_order: List[Card]):
     and a predicate for when to roll two dice.
     """
     next_card = None
-    def buy_strategy(player_state, round_number) -> Tuple[bool, Card]:
+    def buy_strategy(player_state, round_number) -> Optional[Card]:
         nonlocal next_card
         if next_card is None:
             next_card = build_order.pop(0)
