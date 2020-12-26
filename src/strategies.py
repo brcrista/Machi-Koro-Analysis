@@ -6,7 +6,7 @@ from analysis import expected_value_my_turn, expected_value_other_turn
 from dataclasses import dataclass
 from machi_koro import cards
 from machi_koro.cards import Card, Color
-from typing import Callable, List, Optional, Tuple
+from typing import Callable, List, Optional, Set, Tuple
 
 def expected_revenue_my_turn(hand: List[Card], two_dice: bool, num_players: int) -> float:
     """The average revenue a hand will yield on your turn."""
@@ -82,6 +82,9 @@ def _partition(xs, predicate):
     return [x for x in xs if predicate(x)], [x for x in xs if not predicate(x)]
 
 def simulate(strategy: Strategy, num_players: int) -> pd.DataFrame:
+    """
+    Execute a strategy to see how many turns it takes to win.
+    """
     if not (2 <= num_players <= 4):
         raise ValueError()
 
@@ -119,6 +122,16 @@ def simulate(strategy: Strategy, num_players: int) -> pd.DataFrame:
             if player_state.is_winner():
                 return pd.DataFrame(game_log)
     raise InvalidStrategyError("The strategy does not buy all four victory cards within 100 rounds.")
+
+def aggregate_scores_on(simulation: pd.DataFrame) -> Set[int]:
+    """
+    Count up all of the rolls that a strategy scores on.
+    """
+    scores_on = set([1, 2, 3]) # from starting cards
+    for card in simulation["Bought Card"]:
+        if card is not None:
+            scores_on = scores_on.union(card.activates_on)
+    return scores_on
 
 def _from_build_order(build_order: List[Card]):
     """
