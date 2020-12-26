@@ -1,5 +1,7 @@
 # Mathematical Analysis of Machi Koro
 
+[![GitHub Actions build badge](https://github.com/brcrista/Machi-Koro-Analysis/workflows/CI/badge.svg)](https://github.com/brcrista/Machi-Koro-Analysis/actions?query=workflow%3ACI)
+
 ## Prerequisites
 
 * Miniconda with Python 3.7 or later
