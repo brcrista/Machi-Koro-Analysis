@@ -13,10 +13,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - run: conda update conda --yes --name base
-    - run: conda install --yes jupyterlab matplotlib pandas mypy
-      name: Install packages into the base environment
-    - run: mypy src/machi_koro
-      name: Run Mypy
-    - run: jupyter nbconvert --to notebook --execute src/analysis.ipynb
-      name: Execute Jupyter notebook
+    - run: which conda
+    # - run: conda update conda --yes --name base
+    # - run: conda install --yes jupyterlab matplotlib pandas mypy
+    #   name: Install packages into the base environment
+    # - run: mypy src/machi_koro
+    #   name: Run Mypy
+    # - run: jupyter nbconvert --to notebook --execute src/analysis.ipynb
+    #   name: Execute Jupyter notebook
