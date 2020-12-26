@@ -252,8 +252,8 @@ def fast_train_to_factory():
             cards.FurnitureFactory(),
             cards.CheeseFactory(),
             cards.Forest(),
-            cards.AmusementPark(),
             cards.RadioTower(),
+            cards.AmusementPark(),
             cards.ShoppingMall(),
         ]),
         roll_two=roll_two_always_after_train_station)
@@ -269,8 +269,8 @@ def fast_train_to_big_cheese():
             cards.CheeseFactory(),
             cards.CheeseFactory(),
             cards.CheeseFactory(),
-            cards.AmusementPark(),
             cards.RadioTower(),
+            cards.AmusementPark(),
             cards.ShoppingMall(),
         ]),
         roll_two=roll_two_always_after_train_station)
