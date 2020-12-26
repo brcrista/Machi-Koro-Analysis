@@ -19,10 +19,12 @@ jobs:
     - run: conda env create --file environment.yml
       name: Create Conda environment
     - run: |
+        source ~/.bash_profile
         conda activate machi-koro-analysis
         mypy src/machi_koro
       name: Run Mypy
     - run: |
+        source ~/.bash_profile
         conda activate machi-koro-analysis
         jupyter nbconvert --to notebook --execute src/analysis.ipynb
       name: Execute Jupyter notebook
