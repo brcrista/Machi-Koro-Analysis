@@ -15,12 +15,13 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - run: conda update conda --yes --name base
+    - run: conda init
     - run: conda env create --file environment.yml
       name: Create Conda environment
     - run: |
         conda activate machi-koro-analysis
         mypy src/machi_koro
-      name: mypy src/machi_koro
+      name: Run Mypy
     - run: |
         conda activate machi-koro-analysis
         jupyter nbconvert --to notebook --execute src/analysis.ipynb
