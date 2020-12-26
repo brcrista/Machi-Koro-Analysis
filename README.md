@@ -15,7 +15,7 @@ conda env create -f environment.yml
 After doing this once, activate the environment with:
 
 ```bash
-conda machi-koro-analysis
+conda activate machi-koro-analysis
 ```
 
 (**Note:** conda environments don't work in PowerShell.)
