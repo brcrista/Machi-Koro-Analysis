@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - run: which conda
+    # - run: conda update conda --yes --name base
+    # - run: conda install --yes jupyterlab matplotlib pandas mypy
+    #   name: Install packages into the base environment
+    # - run: mypy src/machi_koro
+    #   name: Run Mypy
+    # - run: jupyter nbconvert --to notebook --execute src/analysis.ipynb
+    #   name: Execute Jupyter notebook
